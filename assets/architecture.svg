@@ -1,5 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650">
   <rect width="1200" height="650" fill="#ffffff"/>
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#6b7280"/>
+    </marker>
+  </defs>
   <text x="600" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="31" font-weight="700" fill="#111827">Financial Planning Manager</text>
   <text x="600" y="82" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#4b5563">Local ledger → budgets and statements → plans and review</text>
 
@@ -53,10 +58,10 @@
   </g>
 
   <g stroke="#6b7280" stroke-width="3" fill="none">
-    <line x1="895" y1="266" x2="965" y2="266"/><polygon points="960,260 970,266 960,272" fill="#6b7280"/>
-    <line x1="895" y1="376" x2="965" y2="306"/><polygon points="965,306 953,304 961,316" fill="#6b7280"/>
-    <line x1="1060" y1="307" x2="1060" y2="335"/><polygon points="1054,330 1060,340 1066,330" fill="#6b7280"/>
-    <path d="M965 376 L930 376 L930 455 L800 455 L800 417"/><polygon points="794,422 800,412 806,422" fill="#6b7280"/>
+    <line x1="895" y1="266" x2="965" y2="266" marker-end="url(#arrowhead)"/>
+    <line x1="895" y1="348" x2="965" y2="294" marker-end="url(#arrowhead)"/>
+    <line x1="1060" y1="307" x2="1060" y2="335" marker-end="url(#arrowhead)"/>
+    <line x1="965" y1="376" x2="895" y2="376" marker-end="url(#arrowhead)"/>
   </g>
 
   <rect x="145" y="500" width="910" height="105" rx="16" fill="#f9fafb" stroke="#d1d5db" stroke-width="2"/>
