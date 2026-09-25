@@ -1,82 +1,170 @@
 # Financial Planning Manager — Showcase
 
-A **local-first personal finance desktop application** for recording money movement,
-managing monthly budgets, and building toward structured financial statements and
-future planning.
+A **local-first desktop financial management application** that connects everyday
+money records with budgeting, financial statements, long-term plans, and periodic
+review.
 
-> **Portfolio showcase only.**  
-> The production repository is private. This public repository intentionally contains
-> no personal financial records, private spreadsheets, local databases, screenshots,
-> credentials, machine-specific paths, or proprietary implementation source.
+> **Portfolio showcase.**  
+> This page explains the intended completed product experience and system design.
+> The production repository remains private, and this public showcase contains no
+> personal financial records, private spreadsheets, local databases, credentials,
+> or production implementation source.
 
-## What the project does
+## What the completed product does
 
-The application connects day-to-day ledger activity with monthly budget decisions.
+The application keeps a user's financial data on their own device and turns recorded
+money movement into a structured decision workflow.
 
 ```text
-Accounts + Transactions + Transfers
-              │
-              ▼
-        Local SQLite ledger
-              │
-      ┌───────┴────────┐
-      ▼                ▼
- Transactions       Budgets
-      │                │
-      └───────┬────────┘
-              ▼
-     Budget vs. Actual
-              │
-              ▼
-        Variance Review
-              │
-              ▼
-   Financial Statements
-      (in development)
-              │
-              ▼
-      Future Planning
-       (later milestone)
+Accounts / Imports
+       │
+       ▼
+Transactions + Transfers
+       │
+       ▼
+   Local Ledger
+       │
+       ├──────────────► Monthly Budgets
+       │                     │
+       │                     ▼
+       │               Plan vs. Actual
+       │                     │
+       │                     ▼
+       │                Variance Review
+       │
+       ├──────────────► Financial Statements
+       │                 PL • BS • CF
+       │
+       └──────────────► Financial Planning
+                         │
+                         ▼
+                Goals • Targets • Horizons
+                         │
+                         ▼
+                    Plan Reviews
+                         │
+                         ▼
+               Updated financial decisions
 ```
 
-## Implemented capabilities
+The goal is not only to record spending. It is to create a traceable path from
+**actual financial activity → financial understanding → future plans → review**.
 
-### Transactions and accounts
+## How it works
 
-- Create and edit transactions.
-- Confirmed void/delete workflows.
-- Filter and tag ledger activity.
-- Signed income/expense summaries.
-- Create local bank accounts.
-- Record explicit account-to-account transfers separately from income and expenses.
+### 1. Record financial activity
 
-### Monthly budgeting
+The user creates local accounts and records transactions such as salary, groceries,
+rent, subscriptions, or other income and expenses.
 
-- Create and edit monthly budget periods.
-- Add category-level planned amounts.
-- Compare plan versus actual posted ledger activity.
-- Classify overspend, underspend, and on-track results.
-- Navigate between months.
-- Copy **plan values only** into the next month.
-- Recalculate actuals when the underlying transaction data changes.
-- Preserve durable budget definitions in local SQLite storage.
+Account-to-account transfers are modeled separately from income and expenses so that
+moving money between accounts does not distort financial performance.
 
-### Financial statement foundation
+Transactions can be categorized and tagged, creating a consistent ledger that can be
+reused by budgets, reports, and planning.
 
-- A tested **profit-and-loss calculation engine** is implemented.
-- Category grouping and source provenance are retained.
-- Incomplete or failed statement inputs produce explicit diagnostics rather than
-  silently returning misleading totals.
-- Statement UI/export, balance-sheet and cash-flow engines remain future work.
+### 2. Manage monthly budgets
 
-## Architecture
+For each month, the user creates category-level planned amounts.
+
+The application compares the plan with actual posted ledger activity and calculates:
+
+- planned amount
+- actual amount
+- variance
+- achievement / utilization ratio
+- overspend, underspend, or on-target status
+
+Actual values come from the ledger rather than being copied into the budget itself.
+This means editing a transaction automatically changes the relevant budget result
+while preserving the original plan.
+
+A previous month's **plan** can be reused for the next month without carrying over
+the previous month's actual spending.
+
+### 3. Understand financial performance
+
+The statement layer converts the same ledger into standard financial views.
+
+The completed system is designed to provide:
+
+- **Profit and Loss (PL)** — income, expenses, and net result over a period
+- **Balance Sheet (BS)** — assets, liabilities, and balances at a point in time
+- **Cash Flow (CF)** — cash movement classified by financial purpose
+
+Statement calculations retain source provenance and diagnostics so the user can see
+where numbers came from and when data is incomplete or inconsistent.
+
+### 4. Build future plans
+
+The planning layer turns financial goals into structured plans.
+
+A plan can contain:
+
+- a name and planning horizon
+- target dates
+- target values
+- hierarchical sub-goals
+- assumptions
+- tags
+- review notes
+- status
+
+For example:
+
+```text
+Plan: Build a 6-month emergency fund
+│
+├── Target: ¥1,800,000
+│
+├── Monthly saving target: ¥75,000
+│
+├── Reduce discretionary spending
+│
+└── Review progress every month
+```
+
+Plans are connected conceptually to the same financial data used by budgets and
+statements, so goals can be reviewed against actual financial results rather than
+maintained as isolated notes.
+
+### 5. Review progress
+
+The application stores plan reviews over time.
+
+Each review can capture:
+
+- review date
+- actual value
+- progress summary
+- variance explanation
+- status assessment
+
+This creates a feedback loop:
+
+```text
+Plan
+  ↓
+Financial activity
+  ↓
+Budget / statement results
+  ↓
+Review
+  ↓
+Adjust plan or behavior
+  ↓
+Next review
+```
+
+The completed product therefore acts as both a **financial record system** and a
+**personal planning system**.
+
+## Desktop architecture
 
 ![High-level architecture](assets/architecture.svg)
 
-The application is intentionally **desktop-first, offline-first, single-user, and
+The application is designed as **desktop-first, offline-first, single-user, and
 privacy-oriented**.
-
-### Main technology stack
 
 | Area | Technology |
 |---|---|
@@ -85,125 +173,187 @@ privacy-oriented**.
 | Build tooling | Vite |
 | Local database | SQLite |
 | Persistence | Drizzle ORM + better-sqlite3 |
-| Validation | Zod |
-| State | Zustand |
-| Unit/integration tests | Vitest |
-| Browser workflow tests | Playwright |
+| Input validation | Zod |
+| Client state | Zustand |
+| Unit/integration testing | Vitest |
+| Workflow testing | Playwright |
 | Architecture enforcement | ESLint + dependency-cruiser |
 
-The React UI talks to feature gateways and use-case services. Native desktop requests
-cross a private local boundary to a bundled Node ledger runtime backed by SQLite.
-Persistence is kept behind repository/query-service boundaries rather than accessed
-directly from UI components.
+The React UI communicates with feature gateways and use-case services rather than
+accessing SQLite directly.
 
-## Data model
+The native desktop layer connects to a local ledger runtime, which owns persistence
+and financial data access. Repository and query-service boundaries isolate database
+details from budgeting, statement, and planning logic.
 
-The private implementation includes separate domain structures for:
+## Core data model
 
-- profiles
-- accounts
-- hierarchical categories
-- tags
-- transactions
-- transfers
-- monthly budget periods
-- budget lines
-- statement context
-- future planning structures
+The completed system is organized around a shared set of financial entities:
 
-Money calculations use **integer minor units** instead of floating-point aggregation.
+### Financial records
 
-## Engineering decisions
+- Profiles
+- Accounts
+- Categories
+- Tags
+- Transactions
+- Transfers
 
-### Local-first privacy boundary
+### Budgeting
 
-Real accounts, transactions, balances, budgets, forecasts, exports, backups, and
-local databases stay outside Git. The desktop app stores its ledger in local
-application data; browser-development and tests use isolated local databases.
+- Budget periods
+- Budget category lines
+- Planned amounts
+- Actual calculations
+- Variance results
 
-No cloud account or bank synchronization is required for the current baseline.
+### Statements
 
-### Explicit financial semantics
+- Statement definitions
+- Reporting periods / as-of dates
+- Source transactions
+- Financial classifications
+- Diagnostic information
 
-Transfers are modeled separately from income and expenses. Budget actuals are derived
-from posted ledger activity instead of being copied into budget definitions. Statement
-calculation retains source provenance and diagnostics so errors remain inspectable.
+### Planning
 
-### Durable budget workflow
+- Plans
+- Plan nodes and sub-goals
+- Target dates and values
+- Assumptions
+- Tags
+- Plan reviews
 
-Budget definitions survive process restart. Actual values are calculated from the
-ledger, which means changing a transaction can update budget variance without rewriting
-the plan.
+### Data management
 
-### Boundary enforcement
+- Import jobs
+- Export jobs
+- Backup records
+- Backup verification status
 
-Subsystem boundaries are enforced through import restrictions and dependency-graph
-checks. Persistence, financial rules, UI workflows, and statement logic are kept as
-separate concerns.
+## Important design decisions
 
-## Example budget behavior
+### Local-first privacy
 
-A simplified workflow demonstrated by the private implementation:
+Financial information stays on the user's computer by default.
 
-1. Record a grocery expense.
-2. Create a monthly Grocery budget.
-3. Review planned versus actual spending.
-4. Edit the plan and observe updated variance.
-5. Edit the underlying transaction and return to the budget.
-6. Actuals recalculate from the ledger while the plan remains unchanged.
-7. Copy the plan into the next month without copying the previous month's actuals.
-8. Restart the desktop application and reopen the saved budget.
+The application does not require a cloud account merely to manage a personal ledger.
+Local SQLite storage is the primary source of truth.
 
-This workflow has been exercised through unit, integration, browser, and native
-desktop verification in the private development repository.
+Private information such as real transactions, balances, planning notes, exports,
+backups, and databases is kept outside the public source repository.
 
-## Current implementation status
+### Integer money calculations
 
-The private project currently has a working transaction-management and monthly-budget
-baseline. The profit-and-loss calculation engine is implemented and tested.
+Money is stored and calculated using **integer minor units** rather than binary
+floating-point values.
 
-The following are **not claimed as completed** in this showcase:
+For example:
 
-- balance-sheet engine
-- cash-flow engine
-- full financial statement UI/export
-- automated forecasting
-- recommendation engine
-- bank synchronization
-- automatic backup/restore
-- database encryption
-- cloud accounts
-- multi-user collaboration
-- tax-filing functionality
+```text
+¥12,345  → 12345 minor units
+A$123.45 → 12345 cents
+```
 
-## Development context
+This avoids floating-point rounding errors in financial aggregation.
 
-This is an **AI-assisted software development project**. My contribution includes
-requirements definition, workflow and product design, financial/domain modeling,
-architecture decisions, integration, debugging, verification, and iterative
-refinement with AI coding tools.
+### Explicit transfers
 
-I do not claim that every line of the private implementation was manually authored.
+A transfer between two owned accounts is not treated as income or spending.
 
-## What is intentionally not public
+For example:
 
-The production repository remains private. This showcase excludes:
+```text
+Checking → Savings: A$500
+
+Checking balance   -500
+Savings balance    +500
+Income/expense        0
+```
+
+This distinction is essential for meaningful budgets and statements.
+
+### One ledger, multiple views
+
+Transactions are recorded once.
+
+Budget results, statements, and planning reviews derive information from the same
+underlying financial records rather than maintaining separate copies of the truth.
+
+### Traceable calculations
+
+Calculated outputs are designed to retain enough source information to explain how a
+result was produced.
+
+This is particularly important for financial statements and planning reviews, where
+a plausible-looking number is not sufficient if its source cannot be understood.
+
+## Example end-to-end workflow
+
+A user could use the completed application like this:
+
+1. Create checking, savings, and credit-card accounts.
+2. Record or import salary and daily transactions.
+3. Categorize spending and add useful tags.
+4. Create the month's budget.
+5. Compare planned and actual spending throughout the month.
+6. Review overspending and adjust behavior where appropriate.
+7. Open PL, BS, and CF views to understand overall financial position.
+8. Create a long-term plan, such as building an emergency fund or saving for travel.
+9. Set a target amount and target date.
+10. Review progress using current financial data.
+11. Record the review and adjust the plan when circumstances change.
+12. Export or back up the local data when needed.
+
+## Example: connecting a budget to a goal
+
+Suppose a user wants to save **¥1,200,000 in 12 months**.
+
+The planning layer defines the target:
+
+```text
+Goal: ¥1,200,000
+Period: 12 months
+Required average progress: ¥100,000 / month
+```
+
+The monthly budget can then reserve money for that goal.
+
+At review time, the user can compare:
+
+```text
+Target progress     ¥400,000
+Actual progress     ¥360,000
+Variance            -¥40,000
+Status              Behind target
+```
+
+The application does not need to treat the plan as an isolated checklist; it can be
+reviewed using the financial records already stored in the ledger.
+
+## Portfolio context
+
+This is an **AI-assisted software development project**. My work includes product and
+workflow definition, financial/domain modeling, architecture decisions, integration,
+debugging, testing strategy, validation, and iterative refinement with AI coding
+tools.
+
+The private repository contains the working implementation and engineering history.
+This public showcase focuses on **how the completed product is designed to work**.
+
+## What remains private
+
+This showcase intentionally excludes:
 
 - production source code
 - personal financial records
 - local SQLite databases
 - private spreadsheets and trackers
-- screenshots containing local data
 - raw logs and backups
+- private screenshots
 - machine-specific configuration
-- internal governance and debugging artifacts
-
-The purpose of this repository is to demonstrate the **product scope, architecture,
-financial semantics, implementation depth, and engineering decisions** without
-publishing the private application itself.
-
-## Repository note
+- internal development artifacts
 
 If you are reviewing this project for a role, I can discuss the architecture,
-financial modeling decisions, debugging process, testing strategy, and selected
-sanitized implementation examples.
+financial modeling, workflow decisions, testing strategy, and selected sanitized
+implementation examples.
