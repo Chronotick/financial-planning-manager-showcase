@@ -1,5 +1,7 @@
 # Financial Planning Manager — Showcase
 
+![Financial Planning Manager preview](assets/preview.svg)
+
 A **local-first desktop financial management application** that connects everyday
 money records with budgeting, financial statements, long-term plans, and periodic
 review.
