@@ -62,7 +62,7 @@
 
   <g stroke="#6b7280" stroke-width="3" fill="none">
     <line x1="895" y1="266" x2="965" y2="266" marker-end="url(#arrowhead)"/>
-    <line x1="895" y1="348" x2="965" y2="294" marker-start="url(#arrowhead-start)" marker-end="url(#arrowhead)"/>
+    <line x1="895" y1="348" x2="965" y2="294" marker-end="url(#arrowhead)"/>
     <line x1="1060" y1="307" x2="1060" y2="335" marker-end="url(#arrowhead)"/>
     <line x1="965" y1="376" x2="895" y2="376" marker-end="url(#arrowhead)"/>
   </g>
